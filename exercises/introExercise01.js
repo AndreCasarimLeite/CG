@@ -67,36 +67,35 @@ function render()
 }
 
 function createPlayer(/*linhaChegada*/) {
-  let base, material2, laterais, torusMat, atrasMat, capaMat, cabineMat;
+  let base, material2, laterais, torusMat, atrasMat, cabineMat, turbinaMat, heliceMat;
   base = new THREE.MeshLambertMaterial({
-    color: "red",
+    color: "pink",
   });
   material2 = new THREE.MeshLambertMaterial({
-    color: "lightgreen",
+    color: "pink",
   });
   laterais = new THREE.MeshLambertMaterial({
-    color: "lightblue",
+    color: "pink",
+  });
+  turbinaMat = new THREE.MeshLambertMaterial({
+    color: "pink",
   });
   torusMat = new THREE.MeshLambertMaterial({
-    color: "lightblue",
+    color: "pink",
   });
   atrasMat = new THREE.MeshLambertMaterial({
-    color: "orangered",
-  });
-  capaMat = new THREE.MeshPhongMaterial({
-    color: "blue",
-    shininess: "200",
-    specular: "blue",
+    color: "pink",
   });
   cabineMat = new THREE.MeshPhongMaterial({
-    color: "lightblue",
+    color: "pink",
     shininess: "200",
-    specular: "lightblue",
+    specular: "pink",
   });
   var textureLoader = new THREE.TextureLoader();
   // base
   let cylinderGeometry1 = new THREE.CylinderGeometry(4, 4, 0.3);
   player = new THREE.Mesh(cylinderGeometry1, base);
+  player.material.map = textureLoader.load("../T3/textures/frente.jpg")
   player.scale.set(0.5 * 1.1, 0.5 * 1, 0.5 * 0.6);
 
   // posicionamento inicial pela linha de chegada
@@ -124,6 +123,7 @@ function createPlayer(/*linhaChegada*/) {
   // núcleo
   let cubeGeometry = new THREE.BoxGeometry(9, 2, 7.5);
   let cube = new THREE.Mesh(cubeGeometry, material2);
+  cube.material.map = textureLoader.load("../T3/textures/nucleo.jpg");
   cube.position.setY(1);
   cube.scale.x = 1 / 1.3;
   player.add(cube);
@@ -144,6 +144,7 @@ function createPlayer(/*linhaChegada*/) {
 
   let atrasGeometry = new THREE.BoxGeometry(1, 2, 9.5);
   let atras = new THREE.Mesh(atrasGeometry, atrasMat);
+  atras.material.map = textureLoader.load("../T3/textures/nucleo.jpg");
   atras.position.setX(-5);
   atras.receiveShadow = true;
   atras.castShadow = true;
@@ -154,27 +155,45 @@ function createPlayer(/*linhaChegada*/) {
   cabine.position.setY(-5.6);
   cabine.position.setX(3);
   cabine.scale.set(0.7, 1, 0.8);
-  //cabine.material.map = textureLoader.load("../T3/textures/cabine.jpg");
+  cabine.material.map = textureLoader.load("../T3/textures/steel.jpg");
   cabine.receiveShadow = true;
   cabine.castShadow = true;
   cube.add(cabine);
 
   let posteGeometry = new THREE.ConeGeometry(1.6, 1.5);
-  let poste = new THREE.Mesh(posteGeometry, material2);
+  let poste = new THREE.Mesh(posteGeometry, turbinaMat);
   poste.position.set(-3.3, 1.7, 0);
   poste.receiveShadow = true;
   poste.scale.x = 1 / 1.3;
   poste.castShadow = true;
 
   let turbinaGeometry = new THREE.CylinderGeometry(2, 2, 2);
-  let turbina = new THREE.Mesh(turbinaGeometry, material2);
+  let turbina = new THREE.Mesh(turbinaGeometry, turbinaMat);
+  turbina.material.map = textureLoader.load("../T3/textures/turbina.jpg")
   turbina.position.set(0, 0.6, 0);
   turbina.scale.set(1, 1.3, 0.7);
-  //turbina.scale.x = 1 / 1.3;
+  turbina.scale.x = 1 * 1.3;
   turbina.rotateX(THREE.MathUtils.degToRad(90));
   turbina.rotateZ(THREE.MathUtils.degToRad(90));
   turbina.receiveShadow = true;
   turbina.castShadow = true;
+
+  let circleG = new THREE.CircleGeometry(2, 32);
+  let circleM = new THREE.MeshLambertMaterial({
+    color: "lightgrey",
+  });
+
+  let helice1 = new THREE.Mesh(circleG, circleM);
+  helice1.material.map = textureLoader.load("../T3/textures/helice.jpg");
+  helice1.position.set(0,-1.05,0);
+  helice1.rotateX(THREE.MathUtils.degToRad(90));
+  turbina.add(helice1);
+  let helice2 = new THREE.Mesh(circleG, circleM);
+  helice2.material.map = textureLoader.load("../T3/textures/helice.jpg");
+  helice2.position.set(0,1.05,0);
+  helice2.rotateX(THREE.MathUtils.degToRad(90));
+  helice2.rotateY(THREE.MathUtils.degToRad(180));
+  turbina.add(helice2);
   poste.add(turbina);
 
   cube.add(poste);

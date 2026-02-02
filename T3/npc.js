@@ -12,19 +12,35 @@ const ALIGN_MAX_ROT_PER_FRAME = 0.06; // limite de rotação por frame ao alinha
 const COOLDOWN = 2000;
 
 export function createnpc(linhaChegada) {
-  let matFosco, matBrilho;
-  matFosco = new THREE.MeshLambertMaterial({
+  let base, material2, laterais, torusMat, atrasMat, cabineMat, turbinaMat, heliceMat;
+  base = new THREE.MeshLambertMaterial({
     color: "pink",
   });
-  matBrilho = new THREE.MeshPhongMaterial({
+  material2 = new THREE.MeshLambertMaterial({
+    color: "pink",
+  });
+  laterais = new THREE.MeshLambertMaterial({
+    color: "pink",
+  });
+  turbinaMat = new THREE.MeshLambertMaterial({
+    color: "pink",
+  });
+  torusMat = new THREE.MeshLambertMaterial({
+    color: "pink",
+  });
+  atrasMat = new THREE.MeshLambertMaterial({
+    color: "pink",
+  });
+  cabineMat = new THREE.MeshPhongMaterial({
     color: "pink",
     shininess: "200",
     specular: "pink",
   });
-
+  var textureLoader = new THREE.TextureLoader();
   // base
   let cylinderGeometry1 = new THREE.CylinderGeometry(4, 4, 0.3);
-  npc = new THREE.Mesh(cylinderGeometry1, matFosco);
+  npc = new THREE.Mesh(cylinderGeometry1, base);
+  npc.material.map = textureLoader.load("../T3/textures/frente.jpg")
   npc.scale.set(0.5 * 1.1, 0.5 * 1, 0.5 * 0.6);
 
   // posicionamento inicial pela linha de chegada
@@ -38,10 +54,9 @@ export function createnpc(linhaChegada) {
   );
 
   function createLaterais(z) {
-    var textureLoader = new THREE.TextureLoader();
     let cylG = new THREE.CylinderGeometry(1.3, 1.3, 7, 45);
-    let lateral = new THREE.Mesh(cylG, matFosco);
-    lateral.material.map = textureLoader.load("./textures/lateral.jpg");
+    let lateral = new THREE.Mesh(cylG, laterais);
+    lateral.material.map = textureLoader.load("../T3/textures/lateral.jpg");
     lateral.position.set(0.0, 1.0, z);
     lateral.scale.x = 1 / 1.3;
     lateral.rotateZ(THREE.MathUtils.degToRad(90));
@@ -52,7 +67,8 @@ export function createnpc(linhaChegada) {
 
   // núcleo
   let cubeGeometry = new THREE.BoxGeometry(9, 2, 7.5);
-  let cube = new THREE.Mesh(cubeGeometry, matFosco);
+  let cube = new THREE.Mesh(cubeGeometry, material2);
+  cube.material.map = textureLoader.load("../T3/textures/nucleo.jpg");
   cube.position.setY(1);
   cube.scale.x = 1 / 1.3;
   npc.add(cube);
@@ -61,7 +77,8 @@ export function createnpc(linhaChegada) {
   cube.castShadow = true;
 
   let torusGeometry = new THREE.TorusGeometry(2.1, 1.0, 16, 100, 2.5);
-  let torus = new THREE.Mesh(torusGeometry, matFosco);
+  let torus = new THREE.Mesh(torusGeometry, torusMat);
+  torus.material.map = textureLoader.load("../T3/textures/frente.jpg");
   torus.position.set(2.8, 0, -0.05);
   torus.scale.set(1.7, 1.8, 1);
   torus.rotateX(THREE.MathUtils.degToRad(90));
@@ -71,53 +88,60 @@ export function createnpc(linhaChegada) {
   cube.add(torus);
 
   let atrasGeometry = new THREE.BoxGeometry(1, 2, 9.5);
-  let atras = new THREE.Mesh(atrasGeometry, matBrilho);
+  let atras = new THREE.Mesh(atrasGeometry, atrasMat);
+  atras.material.map = textureLoader.load("../T3/textures/nucleo.jpg");
   atras.position.setX(-5);
   atras.receiveShadow = true;
   atras.castShadow = true;
   cube.add(atras);
 
-  let capaRGeometry = new THREE.PlaneGeometry(9.0, 9.5);
-  let capaR = new THREE.Mesh(capaRGeometry, matBrilho);
-  capaR.position.set(-1.0, 1.1, 0);
-  capaR.rotateX(THREE.MathUtils.degToRad(-90));
-  capaR.receiveShadow = true;
-  capaR.castShadow = true;
-  cube.add(capaR);
-
-  let capaCGeometry = new THREE.CircleGeometry(4.7, 32, 0, 3.2);
-  let capaC = new THREE.Mesh(capaCGeometry, matBrilho);
-  capaC.position.set(3.5, 1.1, 0);
-  capaC.rotateX(THREE.MathUtils.degToRad(-90));
-  capaC.rotateZ(THREE.MathUtils.degToRad(-90));
-  capaC.receiveShadow = true;
-  capaC.castShadow = true;
-  cube.add(capaC);
-
   let cabineGeometry = new THREE.SphereGeometry(8, 32, 16, 0, 6.5, 0, 0.6);
-  let cabine = new THREE.Mesh(cabineGeometry, matBrilho);
+  let cabine = new THREE.Mesh(cabineGeometry, cabineMat);
   cabine.position.setY(-5.6);
+  cabine.position.setX(3);
   cabine.scale.set(0.7, 1, 0.8);
+  cabine.material.map = textureLoader.load("../T3/textures/steel.jpg");
   cabine.receiveShadow = true;
   cabine.castShadow = true;
   cube.add(cabine);
 
-  let posteGeometry = new THREE.ConeGeometry(0.5, 1.5);
-  let poste = new THREE.Mesh(posteGeometry, matFosco);
-  poste.rotateX(THREE.MathUtils.degToRad(90));
-  poste.position.set(-3.5, 0, 0.6);
+  let posteGeometry = new THREE.ConeGeometry(1.6, 1.5);
+  let poste = new THREE.Mesh(posteGeometry, turbinaMat);
+  poste.position.set(-3.3, 1.7, 0);
   poste.receiveShadow = true;
+  poste.scale.x = 1 / 1.3;
   poste.castShadow = true;
-  capaR.add(poste);
 
-  let turbinaGeometry = new THREE.CylinderGeometry(0.6, 0.6, 0.9);
-  let turbina = new THREE.Mesh(turbinaGeometry, matFosco);
-  turbina.position.set(-3.5, 0, 1.5);
+  let turbinaGeometry = new THREE.CylinderGeometry(2, 2, 2);
+  let turbina = new THREE.Mesh(turbinaGeometry, turbinaMat);
+  turbina.material.map = textureLoader.load("../T3/textures/turbina.jpg")
+  turbina.position.set(0, 0.6, 0);
   turbina.scale.set(1, 1.3, 0.7);
+  turbina.scale.x = 1 * 1.3;
+  turbina.rotateX(THREE.MathUtils.degToRad(90));
   turbina.rotateZ(THREE.MathUtils.degToRad(90));
   turbina.receiveShadow = true;
   turbina.castShadow = true;
-  capaR.add(turbina);
+
+  let circleG = new THREE.CircleGeometry(2, 32);
+  let circleM = new THREE.MeshLambertMaterial({
+    color: "lightgrey",
+  });
+
+  let helice1 = new THREE.Mesh(circleG, circleM);
+  helice1.material.map = textureLoader.load("../T3/textures/helice.jpg");
+  helice1.position.set(0,-1.05,0);
+  helice1.rotateX(THREE.MathUtils.degToRad(90));
+  turbina.add(helice1);
+  let helice2 = new THREE.Mesh(circleG, circleM);
+  helice2.material.map = textureLoader.load("../T3/textures/helice.jpg");
+  helice2.position.set(0,1.05,0);
+  helice2.rotateX(THREE.MathUtils.degToRad(90));
+  helice2.rotateY(THREE.MathUtils.degToRad(180));
+  turbina.add(helice2);
+  poste.add(turbina);
+
+  cube.add(poste);
 
   // garante bounding boxes das geometrias filhas (evita Box3 gigante)
   npc.traverse((n) => {
